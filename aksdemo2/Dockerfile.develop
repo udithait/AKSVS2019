@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0
+ARG BUILD_CONFIGURATION=Debug
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+EXPOSE 80
+
+WORKDIR /src
+COPY ["aksdemo2/aksdemo2.csproj", "aksdemo2/"]
+
+RUN dotnet restore "aksdemo2/aksdemo2.csproj"
+COPY . .
+WORKDIR "/src/aksdemo2"
+RUN dotnet build --no-restore "aksdemo2.csproj" -c $BUILD_CONFIGURATION
+
+RUN echo "exec dotnet run --no-build --no-launch-profile -c $BUILD_CONFIGURATION --" > /entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
